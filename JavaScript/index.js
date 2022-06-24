@@ -1,50 +1,63 @@
-class CarritoDecompras{
-    constructor(){
-        this.productos = []
-        this.name = ''
-        this.total = 0
+const cards = document.getElementById('cards')
+const templateCard = document.getElementById('template-card').content
+const fragment = document.createDocumentFragment()
+let carrito = {}
+
+document.addEventListener('DOMContentLoaded', () =>{
+    fetchData()
+})
+cards.addEventListener('click', (e) =>{
+    addCarrito(e)
+})
+
+const fetchData = async () =>{
+    try{
+        const res = await fetch('data.json')
+        const data = await res.json()
+        console.log(data)
+        pintarCards(data)
+    }catch (error){
+        console.log(error)
     }
-    setName(value){
-        this.name = value
-    }
-    addProduct(product){
-        this.productos.push(product)
-        console.log(product)
-    }
-    removeLastProduct(){
-        this.product.pop()
-    }
-    removeFirstProduct(){
-        this.productos.shift()
-    }
-    getTotal(){
-        for (const producto of this.productos){
-            this.total = this.total + producto.price
-        }
-        console.log(this.total)        
-    }   
 }
 
-class Product{
-    constructor(name, price){
-        this.name = name
-        this.price = price
-    }
+const pintarCards = (data) =>{
+    data.forEach(producto =>{
+        templateCard.querySelector('h5').textContent = producto.title
+        templateCard.querySelector('p').textContent = producto.precio
+        templateCard.querySelector('img').setAttribute('src', producto.thumbnailUrl)
+        templateCard.querySelector('.btn-dark').dataset.id = producto.id
+
+        const clone = templateCard.cloneNode(true)
+        fragment.appendChild(clone)
+    })
+    cards.appendChild(fragment)
 }
-const cliente = new CarritoDecompras()
-cliente.setName('Marina Olivieri')
 
-const p1 = new Product('Shampoo Kerastase Discipline (250ml)', 1630)
-const p2 = new Product('Mascara Kerastase Nutritive (200ml)', 2300)
-const p3 = new Product('Serum nocturno Kerastase (90ml)', 2740)
-const p4 = new Product('Elexir Uktimate Kerastase (100ml)', 2190)
-const p5 = new Product('Protector termico Kerastase (150ml)', 2010)
-const p6 = new Product('Acondicionador Redken Frizz Dismiss (250ml)', 1350)
+const addCarrito = (e) =>{
+    // console.log(e.target)
+    // console.log(e.target.classList.contains('btn-dark'))
+    if (e.target.classList.contains('btn-dark')){
+        setCarrito(e.target.parentElement)
+    }
+    e.stopPropagation()
+}
 
-cliente.addProduct(p1)
-cliente.addProduct(p2)
-cliente.addProduct(p3)
-cliente.addProduct(p4)
-cliente.addProduct(p5)
-cliente.addProduct(p6)
-cliente.getTotal()
+const setCarrito = (objeto) =>{
+    // console.log(objeto)
+    const producto = {
+        id: objeto.querySelector('.btn-dark').dataset.id,
+        title: objeto.querySelector('h5').textContent,
+        precio: objeto.querySelector('p').textContent,
+        cantidad: 1
+    }
+    if (carrito.hasOwnProperty(producto.id)){
+        producto.cantidad = carrito[producto.id].cantidad + 1
+    }
+
+    carrito[producto.id] = {
+        ...producto
+    }
+
+    console.log(producto)
+}
