@@ -23,17 +23,18 @@ items.addEventListener('click', (e) =>{
     btnAccion(e)
 })
 
+/*Pintando Elementos - Consumiendo data.json*/
 const fetchData = async () =>{
     try{
         const res = await fetch('data.json')
         const data = await res.json()
-        // console.log(data)
         pintarCards(data)
     }catch (error){
         console.log(error)
     }
 }
 
+/*Impacatando en el DOM cada objeto (cards)*/
 const pintarCards = (data) =>{
     data.forEach(producto =>{
         templateCard.querySelector('h5').textContent = producto.title
@@ -45,17 +46,17 @@ const pintarCards = (data) =>{
     })
     cards.appendChild(fragment)
 }
+
+/*Creando nuestro carrito*/
 const addCarrito = (e) =>{
-    // console.log(e.target)
-    // console.log(e.target.classList.contains('btn-dark'))
     if (e.target.classList.contains('btn-dark')){
         setCarrito(e.target.parentElement)
     }
     e.stopPropagation()
 }
 
+/*Impacatadndo toda la informacion detro de cada card en el carrito*/
 const setCarrito = (objeto) =>{
-    // console.log(objeto)
     const producto = {
         id: objeto.querySelector('.btn-dark').dataset.id,
         title: objeto.querySelector('h5').textContent,
@@ -72,8 +73,8 @@ const setCarrito = (objeto) =>{
     pintarCarrito()
 }
 
+/*Impactando en el DOM el carrito*/
 const pintarCarrito = () =>{
-    // console.log(carrito)
     items.innerHTML = ''
     Object.values(carrito).forEach(producto =>{
         templateCarrito.querySelector('th').textContent = producto.id
@@ -92,6 +93,7 @@ const pintarCarrito = () =>{
     localStorage.setItem('carrito', JSON.stringify(carrito))
 }
 
+/*Impacatando en el DOM la suma de los productos y sus precios*/
 const pintarFooter = () =>{
     footer.innerHTML = ''
     if (Object.keys(carrito).length === 0){
@@ -101,6 +103,7 @@ const pintarFooter = () =>{
         return 
     }
 
+    /*Accion de ir agregrenado cada producto y su precio*/
     const nCantidad = Object.values(carrito).reduce((acc, {cantidad}) => acc + cantidad,0)
     const nPrecio =  Object.values(carrito).reduce((acc, {cantidad, precio}) => acc + cantidad * precio,0)
     
@@ -119,10 +122,8 @@ const pintarFooter = () =>{
 }
 
 const btnAccion = (e) =>{
-    // console.log(e.target)
     /* Accion de ir en aumento*/
     if(e.target.classList.contains('btn-info')){
-        // console.log(carrito[e.target.dataset.id])
         const producto = carrito[e.target.dataset.id]
         producto.cantidad++
         carrito[e.target.dataset.id] = {
